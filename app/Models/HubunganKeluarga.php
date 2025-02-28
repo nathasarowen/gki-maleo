@@ -27,8 +27,8 @@ class HubunganKeluarga extends Model
         return $this->belongsTo(KkJemaat::class, 'id_kk_jemaat', 'id_kk_jemaat');
     }
 
-    // Relasi ke Jemaat sebagai anggota keluarga
-    public function jemaat()
+    // Relasi ke Jemaat (anggota keluarga)
+    public function jemaatAnggota()
     {
         return $this->belongsTo(Jemaat::class, 'id_jemaat', 'id_jemaat');
     }

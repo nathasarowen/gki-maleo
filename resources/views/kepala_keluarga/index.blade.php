@@ -8,10 +8,10 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th>No Anggota Jemaat</th>
                 <th>Nama Kepala Keluarga</th>
                 <th>Alamat</th>
                 <th>ID Group Wilayah</th>
-                <th>No Anggota</th>
                 <!-- <th>Tempat Lahir</th> -->
                 <!-- <th>Tanggal Lahir</th> -->
                 <!-- <th>Nomor HP</th> -->
@@ -21,10 +21,10 @@
         <tbody>
             @foreach ($kkJemaat as $kk)
                 <tr>
-                    <td>{{ $kk->nama_kepala_keluarga }}</td>
+                    <td>{{ $kk->jemaat->no_anggota ?? '-' }}</td>
+                    <td>{{ $kk->jemaat->nama_jemaat }}</td>
                     <td>{{ $kk->alamat }}</td>
                     <td>{{ $kk->id_group_wilayah }}</td>
-                    <td>{{ $kk->jemaat->no_anggota ?? '-' }}</td>
                     <!-- <td>{{ $kk->jemaat->tempat_lahir ?? '-' }}</td> -->
                     <!-- <td>{{ $kk->jemaat->tanggal_lahir ?? '-' }}</td> -->
                     <!-- <td>{{ $kk->jemaat->nomor_hp ?? '-' }}</td> -->

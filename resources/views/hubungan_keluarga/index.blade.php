@@ -27,14 +27,14 @@
         <tbody>
             @foreach ($hubunganKeluarga as $hubungan)
                 <tr>
-                    <td>{{ $hubungan->kkJemaat->nama_kepala_keluarga }}</td>
-                    <td>{{ $hubungan->jemaat->nama_jemaat }}</td>
+                    <td>{{ $hubungan->kkJemaat->jemaatKK->nama_jemaat ?? 'Tidak Diketahui' }}</td>
+                    <td>{{ $hubungan->jemaatAnggota->nama_jemaat ?? 'Tidak Diketahui' }}</td>
                     <td>{{ $hubungan->hubungan_keluarga }}</td>
                     <td>
                         <!-- Tombol Lihat Detail -->
                         <button class="btn btn-success btn-detail" 
-                            data-kepala="{{ $hubungan->kkJemaat->nama_kepala_keluarga }}" 
-                            data-anggota="{{ $hubungan->jemaat->nama_jemaat }}" 
+                            data-kepala="{{ $hubungan->kkJemaat->jemaatKK->nama_jemaat }}" 
+                            data-anggota="{{ $hubungan->jemaatAnggota->nama_jemaat }}" 
                             data-hubungan="{{ $hubungan->hubungan_keluarga }}"
                             data-toggle="modal" data-target="#detailHubunganModal">
                             Lihat
