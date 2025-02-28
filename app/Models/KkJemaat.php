@@ -17,7 +17,6 @@ class KkJemaat extends Model
     protected $fillable = [
         'id_group_wilayah',
         'id_jemaat', // Kepala keluarga adalah bagian dari jemaat
-        'nama_kepala_keluarga',
         'alamat',
     ];
 
@@ -49,5 +48,10 @@ class KkJemaat extends Model
     public function getAnggota()
     {
         return $this->anggotaKeluarga()->get();
+    }
+
+    public function jemaatKK()
+    {
+        return $this->belongsTo(Jemaat::class, 'id_jemaat', 'id_jemaat');
     }
 }

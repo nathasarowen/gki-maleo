@@ -11,11 +11,13 @@ class HubunganKeluargaController extends Controller
 {
     public function index()
     {
-        $hubunganKeluarga = HubunganKeluarga::with(['kkJemaat', 'jemaat'])->get();
+//        $hubunganKeluarga = HubunganKeluarga::with(['kkJemaat', 'jemaat'])->get();
         $kkJemaat = KkJemaat::all();
         $jemaat = Jemaat::all();
 
-        return view('hubungan_keluarga.index', compact('hubunganKeluarga', 'kkJemaat', 'jemaat'));
+        $hubunganKeluarga = HubunganKeluarga::with(['kkJemaat.jemaatKK', 'jemaatAnggota'])->get();
+
+        return view('hubungan_keluarga.index', compact('hubunganKeluarga'));
     }
 
     public function create()
