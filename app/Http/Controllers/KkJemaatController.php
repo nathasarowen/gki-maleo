@@ -12,10 +12,19 @@ use Illuminate\Support\Facades\Log; // Tambahkan untuk logging
 class KkJemaatController extends Controller
 {
     public function index()
-    {
-        $kkJemaat = KkJemaat::with('jemaat')->get();
-        return view('kepala_keluarga.index', compact('kkJemaat'));
-    }
+{
+    $kkJemaat = KkJemaat::with('jemaat:id_jemaat,nama_jemaat,no_anggota')->get();
+
+    return view('kepala_keluarga.index', compact('kkJemaat'));
+}
+
+// public function index()
+// {    
+//     $jemaats = Jemaat::with(['hubunganKeluarga.kkJemaat', 'kkJemaat'])->get();
+
+//     return view('jemaat.index', compact('jemaats'));
+// }
+
 
     public function create()
     {
@@ -32,11 +41,10 @@ class KkJemaatController extends Controller
 
     public function store(Request $request)
 {
-    // Debugging: Log request yang masuk
-    Log::info('Request Data Kepala Keluarga:', $request->all());
+    Log::info('Request Data Kepala Keluarga:', $request->all()); // Log request data
 
-    // Validasi apakah ID Jemaat tersedia
     if (!$request->has('id_jemaat') || empty($request->id_jemaat)) {
+        Log::error('ID Jemaat tidak ditemukan dalam request!');
         return response()->json([
             'success' => false,
             'message' => 'ID Jemaat belum tersedia, silakan simpan data Jemaat terlebih dahulu.'
@@ -44,20 +52,26 @@ class KkJemaatController extends Controller
     }
 
     try {
-        // Pastikan ID Jemaat yang dikirim benar-benar ada di database
         $jemaat = Jemaat::find($request->id_jemaat);
         if (!$jemaat) {
+            Log::error('Jemaat tidak ditemukan di database untuk ID: ' . $request->id_jemaat);
             return response()->json([
                 'success' => false,
                 'message' => 'ID Jemaat tidak ditemukan di database. Pastikan data Jemaat sudah benar-benar tersimpan.'
             ], 400);
         }
 
-        // Simpan data Kepala Keluarga
+        // **DEBUG**: Log Data yang akan disimpan
+        Log::info('Data yang akan disimpan:', [
+            'id_jemaat' => $request->id_jemaat,
+            'id_group_wilayah' => $request->id_group_wilayah,
+            'alamat' => $request->alamat
+        ]);
+
+        // **Pastikan tidak ada kolom nama_kepala_keluarga**
         $kepalaKeluarga = KkJemaat::create([
             'id_jemaat' => $request->id_jemaat,
             'id_group_wilayah' => $request->id_group_wilayah,
-            'nama_kepala_keluarga' => $jemaat->nama_jemaat, // Ambil nama jemaat dari tabel Jemaat
             'alamat' => $request->alamat
         ]);
 
@@ -69,9 +83,7 @@ class KkJemaatController extends Controller
             'data' => $kepalaKeluarga
         ]);
     } catch (\Exception $e) {
-        // Logging kesalahan agar bisa dicek di log laravel
         Log::error('Kesalahan saat menyimpan Kepala Keluarga:', ['error' => $e->getMessage()]);
-
         return response()->json([
             'success' => false,
             'message' => 'Terjadi kesalahan saat menyimpan Kepala Keluarga.',
@@ -80,22 +92,26 @@ class KkJemaatController extends Controller
     }
 }
 
-    public function show($id)
-    {
-        // Ambil kepala keluarga dari jemaat dengan id_kk_jemaat
-        $kepalaKeluarga = Jemaat::where('id_kk_jemaat', $id)->firstOrFail();
 
-        // Ambil informasi kepala keluarga dari tabel kk_jemaat
-        $kkJemaat = KkJemaat::where('id_kk_jemaat', $id)->firstOrFail();
 
-        // Ambil semua anggota keluarga dengan id_kk_jemaat yang sama
-        $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $id)->with('jemaat')->get();
+public function show($id)
+{
+    // Ambil informasi kepala keluarga dari tabel kk_jemaat
+    // $kkJemaat = KkJemaat::with('jemaat')->where('id_kk_jemaat', $id)->firstOrFail();
+    $kkJemaat = KkJemaat::with('jemaat')->findOrFail($id);
 
-        // Ambil data group wilayah
-        $groupWilayah = GroupWilayah::where('id_group_wilayah', $kkJemaat->id_group_wilayah)->first();
+    // Ambil kepala keluarga dari jemaat berdasarkan id_jemaat di kk_jemaat
+    $kepalaKeluarga = Jemaat::where('id_jemaat', $kkJemaat->id_jemaat)->firstOrFail();
 
-        return view('kepala_keluarga.show', compact('kepalaKeluarga', 'kkJemaat', 'anggotaKeluarga', 'groupWilayah'));
-    }
+    // Ambil semua anggota keluarga yang terhubung dengan kepala keluarga ini dari tabel hubungan_keluarga
+    $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $id)->with('jemaat')->get();
+
+    // Ambil data group wilayah
+    $groupWilayah = GroupWilayah::where('id_group_wilayah', $kkJemaat->id_group_wilayah)->first();
+
+    return view('kepala_keluarga.show', compact('kepalaKeluarga', 'kkJemaat', 'anggotaKeluarga', 'groupWilayah'));
+}
+
 
     public function edit($id)
 {

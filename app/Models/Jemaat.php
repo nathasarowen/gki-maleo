@@ -57,4 +57,9 @@ class Jemaat extends Model
         return $this->belongsTo(KkJemaat::class, 'id_kk_jemaat', 'id_kk_jemaat')
             ->via(HubunganKeluarga::class);
     }
+
+    public function kkJemaat()
+{
+    return $this->belongsTo(KkJemaat::class, 'id_kk_jemaat', 'id_kk_jemaat');
+}
 }

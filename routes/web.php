@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kk-jemaat/{id}/edit', [KkJemaatController::class, 'edit'])->name('kk_jemaat.edit');
     Route::put('/kk-jemaat/{id}', [KkJemaatController::class, 'update'])->name('kk_jemaat.update');
     Route::delete('/kk-jemaat/{id}', [KkJemaatController::class, 'destroy'])->name('kk_jemaat.destroy');
+    // Route::get('/kk-jemaat/{id}', [KkJemaatController::class, 'show'])->name('kk.show');
 });
 
 // Routes untuk Hubungan Keluarga
@@ -67,6 +68,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/hubungan-keluarga/{id}', [HubunganKeluargaController::class, 'destroy'])->name('hubungan_keluarga.destroy');
 });
 
+Route::get('/anggota/create/{id_kk}', [JemaatController::class, 'createAnggota'])->name('anggota.create');
+Route::post('/anggota/store', [JemaatController::class, 'storeAnggota'])->name('anggota.store');
 
 // Route untuk menghapus session error agar modal tidak muncul terus
 Route::get('/clear-errors', function() {

@@ -30,12 +30,16 @@
 
     <!-- Anggota Keluarga -->
     <h3 class="mt-4">Anggota Keluarga</h3>
+    <a href="{{ route('anggota.create', ['id_kk' => $kkJemaat->id_kk_jemaat]) }}" class="btn btn-primary">
+        Tambah Anggota Keluarga
+    </a>
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Nama</th>
                 <th>Hubungan</th>
-                <th>Aksi</th>
+                <th>Status</th>
+                <th>Aksi</th>                
             </tr>
         </thead>
         <tbody>
@@ -43,6 +47,7 @@
                 <tr>
                     <td>{{ $anggota->jemaat->nama_jemaat }}</td>
                     <td>{{ $anggota->hubungan_keluarga }}</td>
+                    <td>{{ $anggota->jemaat->status_aktif }}</td>
                     <td>
                         <button class="btn btn-info btn-detail"
                             data-id="{{ $anggota->jemaat->id_jemaat }}"

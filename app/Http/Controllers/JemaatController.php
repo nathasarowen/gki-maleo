@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Jemaat;
 use App\Models\KkJemaat;
 use App\Models\GroupWilayah;
@@ -104,8 +105,10 @@ public function update(Request $request, $id)
             'no_anggota' => 'required|unique:jemaat,no_anggota,' . $id . ',id_jemaat',
             'nama_jemaat' => 'required',
             'status_keluarga' => 'required|in:kepala,anggota',
-            'id_kk_jemaat' => 'nullable|exists:kk_jemaat,id_kk_jemaat'
-        ], [
+            'id_kk_jemaat' => 'nullable|exists:kk_jemaat,id_kk_jemaat',
+        ],
+        
+        [
             'no_anggota.required' => 'No Anggota wajib diisi.',
             'no_anggota.unique' => 'No Anggota sudah terdaftar.',
             'nama_jemaat.required' => 'Nama Jemaat wajib diisi.',
@@ -156,6 +159,66 @@ public function update(Request $request, $id)
     }
 }
 
+public function createAnggota($id_kk)
+{
+    // Ambil data kepala keluarga berdasarkan ID KK
+    $kepalaKeluarga = KkJemaat::findOrFail($id_kk);
+
+    // Ambil daftar hubungan keluarga yang bisa dipilih
+    $hubunganList = ['Pasangan', 'Anak', 'Orang Tua', 'Saudara', 'Kerabat Lainnya'];
+
+    return view('jemaat.create_anggota', compact('kepalaKeluarga', 'hubunganList'));
+}
+
+public function storeAnggota(Request $request)
+{
+    // Validasi input
+    $request->validate([
+        'no_anggota' => 'required|unique:jemaat,no_anggota',
+        'nama_jemaat' => 'required|string|max:255',
+        'hubungan_keluarga' => 'required|string',
+        'id_kk_jemaat' => 'required|exists:kk_jemaat,id_kk_jemaat'
+    ]);
+
+    try {
+        DB::beginTransaction();
+
+        // Simpan data jemaat
+        $jemaat = Jemaat::create([
+            'no_anggota' => $request->no_anggota,
+            'nama_jemaat' => $request->nama_jemaat,
+            'nomor_hp' => $request->nomor_hp ?? null,
+            'tempat_lahir' => $request->tempat_lahir ?? null,
+            'tanggal_lahir' => $request->tanggal_lahir ?? null,
+            'status_aktif' => 'Aktif',
+            'status_menikah' => 'Belum Menikah',
+        ]);
+
+        // Debugging apakah jemaat benar-benar tersimpan
+        if (!$jemaat || !$jemaat->id_jemaat) {
+            throw new \Exception("Data jemaat gagal disimpan!");
+        }
+
+        // Simpan hubungan keluarga
+        $hubunganKeluarga = HubunganKeluarga::create([
+            'id_kk_jemaat' => $request->id_kk_jemaat,
+            'id_jemaat' => $jemaat->id_jemaat, 
+            'hubungan_keluarga' => $request->hubungan_keluarga
+        ]);
+
+        if (!$hubunganKeluarga) {
+            throw new \Exception("Data hubungan keluarga gagal disimpan!");
+        }
+
+        DB::commit();
+
+        return redirect()->route('kk_jemaat.show', $request->id_kk_jemaat)
+            ->with('success', 'Anggota Keluarga berhasil ditambahkan!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
 
     public function destroy($id)
     {

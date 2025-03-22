@@ -17,7 +17,7 @@ class KkJemaat extends Model
     protected $fillable = [
         'id_group_wilayah',
         'id_jemaat', // Kepala keluarga adalah bagian dari jemaat
-        'nama_kepala_keluarga',
+        // 'nama_kepala_keluarga',
         'alamat',
     ];
 

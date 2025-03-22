@@ -27,8 +27,9 @@
         <tbody>
             @foreach ($hubunganKeluarga as $hubungan)
                 <tr>
-                    <td>{{ $hubungan->kkJemaat->nama_kepala_keluarga }}</td>
+                    <!-- <td>{{ $hubungan->kkJemaat->nama_kepala_keluarga }}</td>                     -->
                     <td>{{ $hubungan->jemaat->nama_jemaat }}</td>
+                    <td>{{ $hubungan->hubungan_keluarga }}</td>
                     <td>{{ $hubungan->hubungan_keluarga }}</td>
                     <td>
                         <!-- Tombol Lihat Detail -->
